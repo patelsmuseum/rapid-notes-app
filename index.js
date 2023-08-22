@@ -7,7 +7,7 @@ const port = 8000;
 const db = require('./config/mongoose');
 
 app.use(express.urlencoded({extended: true}));
-
+app.use(express.static(__dirname+'/assets'));
 app.set('view engine' , 'ejs');
 app.use('/' , require('./routes'));
 
