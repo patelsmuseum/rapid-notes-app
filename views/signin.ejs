@@ -7,10 +7,11 @@
 </head>
 <body>
     <h1>SignIN</h1>
-    <form action="/auth/signin" method="POST">
+    <form action="/auth/create-session" method="POST">
         <input type="email" required="true" placeholder="your email" id="email" name="email">
         <input type="password" required="true" placeholder="your password" id="password" name="password">
         <input type="submit" value="signin">
     </form>
+    <a href="/auth/forget-password">Forget password</a>
 </body>
 </html>

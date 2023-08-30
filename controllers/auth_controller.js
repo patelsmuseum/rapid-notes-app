@@ -77,29 +77,56 @@ module.exports.signup = async function(req, res) {
 
 // sign in page rendering
 module.exports.signinpage = function(req, res) {
+    if(req.isAuthenticated()){                    //restricting this page once logged in
+        return res.redirect('/auth/verify-mobile');
+    }
     return res.render("signin");
+
 }
 
 
 //signing in 
-module.exports.signin = async function(req, res) {
-    var email = req.body.email;
-    var password = req.body.password;
-    var user = await User.findOne({email: email});
-    if (user) {
-        console.log(user);
-        if (user.password === password) {
-            return res.redirect('/users/profile/'+user.id);
-        } else {
-            // alert user that password is wrong
-            console.log("password is wrong");
-            return res.redirect("back");
-        }
-    } else {
-        // alert the user that email does not exist, so please signup
-        console.log("email does not exist");
-        return res.redirect("/auth/signup");
-    }
+// module.exports.signin = async function(req, res) {
+    
+//     var email = req.body.email;
+//     var password = req.body.password;
+//     var user = await User.findOne({email: email});
+//     if (user) {
+//         console.log(user);
+//         if (user.password === password) {
+//             return res.redirect('/users/profile/'+user.id);
+//         } else {
+//             // alert user that password is wrong
+//             console.log("password is wrong");
+//             return res.redirect("back");
+//         }
+//     } else {
+//         // alert the user that email does not exist, so please signup
+//         console.log("email does not exist");
+//         return res.redirect("/auth/signup");
+//     }
+// }
+
+module.exports.createSession = function(req,res){
+    
+    return res.redirect('/');
+}
+
+
+module.exports.destroySession = function(req , res){
+    req.logout(function(err){
+      if(err){
+        // req.flash('error' , 'failed in logging out');
+        console.log('error in logged out successfully');
+      }
+      
+    //   req.flash('success' , 'Logged out succesfully');
+    console.log('logged out successfully')
+      return res.redirect('/');
+  
+    });
+  
+    
 }
 
 //rendering mobile otp page
@@ -160,4 +187,10 @@ module.exports.verifyOtp = async function(req, res) {
         await user.save();
         return res.redirect("back");
     }
+}
+
+
+// forget password
+module.exports.forgetPassword = function(req , res){
+    return res.render('forgetPassword');
 }
