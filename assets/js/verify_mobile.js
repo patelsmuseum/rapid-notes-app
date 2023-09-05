@@ -14,6 +14,7 @@ sendotp.addEventListener('click' , function(){
     data.append('mobileNumber'  , mobile);
     console.log(data);
     const user_id = window.localStorage.getItem("user_id");
+    console.log(user_id);
     data.append('user_id', user_id);
     fetch('/auth/mobile/sendotp' , {
         method: 'POST',

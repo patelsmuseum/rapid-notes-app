@@ -16,14 +16,19 @@ router.post('/create-session' ,passport.authenticate('local' , {failureRedirect:
 router.get('/logOut' ,  authController.destroySession);
 
 //forget password
-router.get('/forget-password' , authController.forgetPassword);
+router.get('/forget-password' , authController.forgetPassword);  // rendering forget password page
+router.post('/reset-password' , authController.sendResetMail);   // sends mail for change password
+router.get('/reset-password/:token' , authController.resetPassword); // opening page after clicking on mail
+router.post('/change-password' , authController.changePassword);
+
+
 
 
 
 
 //mobile otp page render router
 router.get('/verify-mobile' ,passport.checkAuthentication, authController.verifyMobile);
-router.post("/mobile/sendotp", authController.sendOtp);
+router.post("/mobile/sendotp",passport.checkAuthentication, authController.sendOtp);
 router.post('/mobile/verifyotp' , authController.verifyOtp);
 
 module.exports = router;

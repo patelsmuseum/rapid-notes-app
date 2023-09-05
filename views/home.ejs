@@ -10,6 +10,7 @@
 
     <% if (locals.user){ %>                    
         <%= user.name %> 
+        <%= user.id%>
         <span>(user is available at this page )</span>
         <a href="/auth/LogOut"> LogOut</a>
     <% }else{ %>

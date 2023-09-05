@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   email_opt: { type: String },
   mobile_otp: { type: String },
   mobile_verified: {type: Boolean, default: false},
+  resetToken: {type: String , default: null},
+  passwordEditInitiation: {type: Date , default: null},
 }, {
     timestamps: true
 });

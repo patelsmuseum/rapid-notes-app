@@ -1,4 +1,7 @@
 const User = require('../models/user');
+const crypto = require('crypto');
+
+const linkMailer = require('../mailers/forget_mailes');
 
 // const FAST2SMS_KEY = "mbS0YIiTlqU6Mg2uVBPReK1pfXscE4zydCnHGDANt3FxJ5avw7p5sj37byPh2CakTDOxd0mZuwI4ertJ";
 const FAST2SMS_KEY = "bh45nmQSfGAWiX8Nv6ZJHRkpFD0tE37qTPsVCzMlgY2BIdyex9mSQfCvGbs6U9pEXKiY4Rq0BjzWd2oZ"; // from lec
@@ -137,10 +140,12 @@ module.exports.verifyMobile = function(req , res){
 // sending otp its get activated after clicking send otp button so js file is also there in assests for this 
 
 module.exports.sendOtp = async function(req, res) {
+    // console.log(req.body);
     var mobile = req.body.mobileNumber;
     var id = req.body.user_id;
    
     var user = await User.findById(id);
+    console.log(user);
     user.mobile_verified = false;
     console.log(mobile);
     var req = unirest("GET", "https://www.fast2sms.com/dev/bulkV2");
@@ -193,4 +198,76 @@ module.exports.verifyOtp = async function(req, res) {
 // forget password
 module.exports.forgetPassword = function(req , res){
     return res.render('forgetPassword');
+}
+
+
+
+module.exports.sendResetMail = async function (req, res) {
+    try {
+      console.log(req.body);
+      const email = req.body.email;
+      const user = await User.findOne({ email: email });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User Not Found' });
+      }
+  
+      console.log(user.name);
+  
+      const resetToken = crypto.randomBytes(20).toString('hex');
+      user.resetToken = resetToken;
+      await user.save();
+  
+      console.log(user.resetToken);
+  
+      const resetLink = `http://localhost:8000/auth/reset-password/${resetToken}`;
+      console.log(resetLink);
+  
+      // Assuming linkMailer.newLink is an asynchronous function, you can use await
+      await linkMailer.newLink(resetLink);
+      user.passwordEditInitiation = new Date();
+      await user.save();
+      return res.redirect('/');
+    } catch (error) {
+      console.error('Error in sendResetMail:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+module.exports.resetPassword = async function(req , res){
+    const token = req.params.token;
+    const user = await User.findOne({resetToken: token});
+
+    if(!user){
+        return res.status(400).json({message: 'Inavlid Token'});
+    }
+    console.log(user);
+    console.log('You can change your password');
+    
+    return res.render('resetPassword', {
+        userId : user.id,
+    });
+
+}
+
+module.exports.changePassword = async  function(req , res){
+    
+    let userId = req.query.userId;
+    let password = req.body.password;
+    let confirm = req.body.confirm;
+    let user = await User.findById(userId);
+    if(user){
+        var currentDate = new Date();
+        var initiationDate = user.passwordEditInitiation;
+        var difference = currentDate.getMinutes() - initiationDate.getMinutes();
+        if(password == confirm && difference < 2){
+            user.password = password;
+            await user.save();
+            return res.redirect('/auth/signin');
+        }
+    }else{
+        console.log('user doesnot exists ');
+        return res.redirect('/');
+    }
+    
 }
