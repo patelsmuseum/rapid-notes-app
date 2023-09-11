@@ -10,7 +10,7 @@ router.post('/signup' , authController.signup);
 
 //signin routers
 router.get('/signin' , authController.signinpage);
-router.post('/create-session' ,passport.authenticate('local' , {failureRedirect: '/users/sign-in'},) ,authController.createSession);
+router.post('/create-session' ,passport.authenticate('local' , {failureRedirect: '/auth/signin'},) ,authController.createSession);
 
 // log out
 router.get('/logOut' ,  authController.destroySession);

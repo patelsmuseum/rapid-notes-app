@@ -1,0 +1,9 @@
+body{
+    margin: 0;
+    background-color: aqua;
+}
+
+body #layout-main {
+    min-height: 80vh;
+    padding: 10px;
+}
